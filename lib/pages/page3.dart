@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class Page3 extends StatefulWidget {
-  Page3();
+  const Page3({super.key});
 
   @override
   _Page3State createState() => _Page3State();
@@ -13,7 +13,7 @@ class _Page3State extends State<Page3> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text("Lumpini Park"),
+        title: const Text("Lumpini Park"),
         backgroundColor: Colors.blue,
       ),
       body: Column(
@@ -42,7 +42,7 @@ class _Page3State extends State<Page3> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
+                    SizedBox(
                       width: size.width / 2,
                       child: const Text(
                         "สวนลุมพินี",

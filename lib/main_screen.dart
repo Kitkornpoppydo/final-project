@@ -6,10 +6,9 @@ import 'package:testflutter/pages/camera.dart';
 import 'package:testflutter/pages/home.dart';
 import 'package:testflutter/pages/profile.dart';
 
-
-
-
 class MainScreen extends StatefulWidget {
+  const MainScreen({super.key});
+
 
   @override
   State<MainScreen> createState() => _MainScreenState();
@@ -18,7 +17,7 @@ class MainScreen extends StatefulWidget {
 class _MainScreenState extends State<MainScreen> {
   final List<Widget> pages = [
     const HomePage(), // หน้าหลัก
-     CameraPage(), //  Camera
+     const CameraPage(), //  Camera
     const Profile(), // หน้าโปรไฟล์
   ];
   int currentPage = 0;

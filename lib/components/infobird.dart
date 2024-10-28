@@ -4,7 +4,7 @@ import 'package:testflutter/modelbird/modelbird1.dart';
 class Infobird extends StatelessWidget {
   final Modelbird1 bird1;
 
-  Infobird(this.bird1);
+  const Infobird(this.bird1, {super.key});
 
   @override
   Widget build(BuildContext context) {

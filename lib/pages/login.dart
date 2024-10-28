@@ -7,7 +7,7 @@ import 'package:testflutter/pages/Forgotpass.dart';
 import 'package:testflutter/pages/register.dart';
 
 class LoginPage extends StatefulWidget {
-  const LoginPage({Key? key}) : super(key: key);
+  const LoginPage({super.key});
 
   @override
   _LoginPageState createState() => _LoginPageState();
@@ -17,7 +17,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   String username = '';
   String password = '';
-  final storage = FlutterSecureStorage();
+  final storage = const FlutterSecureStorage();
 
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
@@ -44,7 +44,7 @@ class _LoginPageState extends State<LoginPage> {
           const SnackBar(content: Text('Login successful')),
         );
         Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => MainScreen()),
+          MaterialPageRoute(builder: (context) => const MainScreen()),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -156,7 +156,7 @@ class _LoginPageState extends State<LoginPage> {
                       onPressed: () {
                         Navigator.of(context).pushReplacement(
                           MaterialPageRoute(
-                            builder: (BuildContext context) => Register(),
+                            builder: (BuildContext context) => const Register(),
                           ),
                         );
                       },
@@ -171,7 +171,7 @@ class _LoginPageState extends State<LoginPage> {
                     Navigator.push(
                             context,
                             MaterialPageRoute(
-                                builder: (context) => MainScreen()),
+                                builder: (context) => const MainScreen()),
                           );
                   } ,
                   child: Container(

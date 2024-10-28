@@ -4,6 +4,8 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 class Register extends StatefulWidget {
+  const Register({super.key});
+
   @override
   _RegisterState createState() => _RegisterState();
 }
@@ -36,10 +38,10 @@ class _RegisterState extends State<Register> {
     if (response.statusCode == 201) {
       // ถ้าลงทะเบียนสำเร็จ นำทางไปหน้า LoginPage
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Registration successful')),
+        const SnackBar(content: Text('Registration successful')),
       );
       Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+        MaterialPageRoute(builder: (BuildContext context) => const LoginPage()),
       );
     } else {
       // แสดง error message ถ้ามีปัญหา
@@ -66,7 +68,7 @@ class _RegisterState extends State<Register> {
             Container(
               height: 350,
               decoration: BoxDecoration(
-                color: Color(0xFF3b5999).withOpacity(.85),
+                color: const Color(0xFF3b5999).withOpacity(.85),
               ),
             ),
             // Positioned IconButton inside a Container
@@ -74,14 +76,14 @@ class _RegisterState extends State<Register> {
               top: 40, // Adjust as needed
               left: 10, // Adjust as needed
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (BuildContext context) => LoginPage()),
+                      MaterialPageRoute(builder: (BuildContext context) => const LoginPage()),
                     );
                   },
                 ),
@@ -190,7 +192,7 @@ class _RegisterState extends State<Register> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => LoginPage()),
+                              MaterialPageRoute(builder: (context) => const LoginPage()),
                             );
                           },
                           child: const Text("Login"),

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:testflutter/pages/login.dart';
 
 class Forgotpass extends StatelessWidget {
-  const Forgotpass({Key? key}) : super(key: key);
+  const Forgotpass({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -14,7 +14,7 @@ class Forgotpass extends StatelessWidget {
             Container(
               height: 350,
               decoration: BoxDecoration(
-                color: Color(0xFF3b5999).withOpacity(.85),
+                color: const Color(0xFF3b5999).withOpacity(.85),
               ),
             ),
             // Positioned IconButton inside a Container
@@ -22,14 +22,14 @@ class Forgotpass extends StatelessWidget {
               top: 40, // Adjust as needed
               left: 10, // Adjust as needed
               child: Container(
-                decoration: BoxDecoration(
+                decoration: const BoxDecoration(
                   shape: BoxShape.circle,
                 ),
                 child: IconButton(
-                  icon: Icon(Icons.arrow_back),
+                  icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (BuildContext context) =>  LoginPage()),
+                      MaterialPageRoute(builder: (BuildContext context) =>  const LoginPage()),
                     );
                   },
                 ),

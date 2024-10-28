@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:testflutter/pages/login.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({Key? key}) : super(key: key);
+  const Profile({super.key});
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -10,6 +10,7 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  
 
   @override
   void initState() {
@@ -35,44 +36,24 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
             onPressed: () {
               Navigator.push(
                 context,
-                MaterialPageRoute(builder: (context) =>  LoginPage()),
+                MaterialPageRoute(builder: (context) => const LoginPage()),
               );
             },
-            
             icon: const Icon(Icons.arrow_back_ios),
           ),
         ),
       ),
       body: Column(
         children: [
-          // รูปและชื่อด้านบน
+          // Profile Picture and Name
           Container(
             color: Colors.white,
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                Stack(
-                  alignment: Alignment.bottomRight,
-                  children: [
-                    const CircleAvatar(
-                      radius: 50,
-                      backgroundImage: AssetImage("lib/image/logobird.png"),
-                    ),
-                    InkWell(
-                      onTap: () {
-                        // Add functionality for editing avatar
-                      },
-                      child: const CircleAvatar(
-                        radius: 12,
-                        backgroundColor: Colors.green,
-                        child: Icon(
-                          Icons.edit,
-                          size: 15,
-                          color: Colors.white,
-                        ),
-                      ),
-                    ),
-                  ],
+                const CircleAvatar(
+                  radius: 50,
+                  backgroundImage: AssetImage("lib/image/logobird.png"),
                 ),
                 Padding(
                   padding: const EdgeInsets.all(20.0),
@@ -86,7 +67,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
               ],
             ),
           ),
-          // TabBar และ TabBarView ไว้ด้านล่าง
+          // TabBar and TabBarView
           Expanded(
             child: Column(
               children: [
@@ -94,21 +75,23 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   controller: _tabController,
                   labelColor: Colors.black,
                   indicatorColor: Colors.blue,
-                  tabs: const  [
-                    Tab(text: 'edit profile'),
-                    Tab(text: 'history'),
+                  tabs: const [
+                    Tab(text: 'Edit Profile'),
+                    Tab(text: 'History'),
                   ],
                 ),
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                    children: [
-                      // edit profile
-                      Center(child: Text('Flights Content')),
+                     children: const [
+                      // Edit Profile Tab
+                      Center(child: Text('Edit Profile Content')),
 
-                      // history
-                      Center(child: Text('Trips Content')),
-                      
+
+
+
+                      // History Tab
+                       Center(child: Text('Edit Profile Content')),
                     ],
                   ),
                 ),

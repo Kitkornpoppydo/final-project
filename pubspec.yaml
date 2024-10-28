@@ -44,6 +44,8 @@ dependencies:
   image: ^3.0.3
   http: ^0.13.3
   flutter_secure_storage: ^5.0.2
+  firebase_core: ^2.0.0 
+  cloud_firestore: ^4.0.0 
   
 
   

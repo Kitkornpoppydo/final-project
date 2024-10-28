@@ -36,22 +36,22 @@ class _HomePageState extends State<HomePage>
       {
         'title': 'Benjakitti Park',
         'image': 'lib/image/benjakiti park.jpg',
-        'page': Page1(),
+        'page': const Page1(),
       },
       {
         'title': 'Chatuchak Park',
         'image': 'lib/image/chajujak park.jpg',
-        'page': Page2(),
+        'page': const Page2(),
       },
       {
         'title': 'Lumpini Park',
         'image': 'lib/image/lumpini.jpg',
-        'page': Page3(),
+        'page': const Page3(),
       },
       {
         'title': 'Vajirabenjatas Park',
         'image': 'lib/image/rodfai.jpg',
-        'page': Page4(),
+        'page': const Page4(),
       },
     ];
 
@@ -203,7 +203,7 @@ class _HomePageState extends State<HomePage>
                         ),
                         subtitle: Text(bird1.nameeng),
                         leading: Image.asset(bird1.image,width: 80,),
-                        trailing: Icon(Icons.arrow_forward_rounded),
+                        trailing: const Icon(Icons.arrow_forward_rounded),
                         // เชื่อมหน้า infobird
                         onTap: () {
                           Navigator.of(context).push(

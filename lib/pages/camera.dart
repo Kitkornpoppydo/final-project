@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:camera/camera.dart';
-import 'package:image_picker/image_picker.dart'; // นำเข้า image_picker
 import 'dart:io';
+import 'package:image_picker/image_picker.dart';
 
 class CameraPage extends StatefulWidget {
+  const CameraPage({super.key});
+
   @override
   _CameraPageState createState() => _CameraPageState();
 }
@@ -12,24 +14,35 @@ class _CameraPageState extends State<CameraPage> {
   CameraController? _cameraController;
   List<CameraDescription>? _cameras;
   XFile? _imageFile;
-  int _currentCameraIndex = 0;
-  final ImagePicker _picker = ImagePicker(); // สร้างตัวเลือกสำหรับแกลเลอรี
+  final ImagePicker _picker = ImagePicker();
 
   @override
   void initState() {
     super.initState();
-    _initCamera(_currentCameraIndex);
+    _initCamera();
   }
 
-  Future<void> _initCamera(int cameraIndex) async {
+  Future<void> _initCamera() async {
+    // ดึงรายการกล้องที่มีอยู่
     _cameras = await availableCameras();
+
+    // ค้นหากล้องหลัง
+    final backCamera = _cameras!.firstWhere(
+      (camera) => camera.lensDirection == CameraLensDirection.back,
+      orElse: () => _cameras![0], // หากไม่พบกล้องหลังให้ใช้กล้องแรก
+    );
+
+    // สร้าง CameraController ด้วยกล้องหลัง
     _cameraController = CameraController(
-      _cameras![cameraIndex],
+      backCamera,
       ResolutionPreset.high,
     );
+
+    // เริ่มต้นกล้อง
     await _cameraController!.initialize();
 
     if (!mounted) return;
+
     setState(() {});
   }
 
@@ -40,19 +53,16 @@ class _CameraPageState extends State<CameraPage> {
     }
   }
 
-  Future<void> _switchCamera() async {
-    if (_cameras!.length > 1) {
-      _currentCameraIndex = (_currentCameraIndex + 1) % _cameras!.length;
-      await _initCamera(_currentCameraIndex); // สลับไปยังกล้องถัดไป
-    }
-  }
-
   Future<void> _pickImageFromGallery() async {
-    final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
-    if (pickedFile != null) {
-      setState(() {
-        _imageFile = XFile(pickedFile.path); // เลือกรูปจากแกลเลอรี
-      });
+    try {
+      final pickedFile = await _picker.pickImage(source: ImageSource.gallery);
+      if (pickedFile != null) {
+        setState(() {
+          _imageFile = XFile(pickedFile.path);
+        });
+      }
+    } catch (e) {
+      print("Error picking image from gallery: $e");
     }
   }
 
@@ -72,46 +82,46 @@ class _CameraPageState extends State<CameraPage> {
 
     return Scaffold(
       appBar: AppBar(
-        title: Text('Camera Page'),
+        title: const Text('Camera Page'),
       ),
       body: Column(
         children: [
-         Container(
-          height: 350,
-           child:AspectRatio(
-            aspectRatio: _cameraController!.value.aspectRatio,
-            child: CameraPreview(_cameraController!),
+          // แสดงภาพตัวอย่างจากกล้อง
+          SizedBox(
+            height: 350,
+            child: AspectRatio(
+              aspectRatio: _cameraController!.value.aspectRatio,
+              child: CameraPreview(_cameraController!),
+            ),
           ),
-         ),
           const SizedBox(height: 20),
+          // ปุ่มถ่ายภาพ
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
-              // ปุ่มเลือกภาพจากแกลเลอรี
               ElevatedButton(
                 onPressed: _pickImageFromGallery,
                 child: const Icon(Icons.photo),
               ),
-              // ปุ่มถ่ายภาพ
               ElevatedButton(
                 onPressed: _takePicture,
                 child: const Icon(Icons.camera_alt),
               ),
-              // ปุ่มสลับกล้อง
             ],
           ),
           if (_imageFile != null)
             Column(
               children: [
                 const SizedBox(height: 30),
-                Container(
+                // แสดงภาพที่ถ่ายได้
+                SizedBox(
                   width: 400,
                   child: Image.file(
                     File(_imageFile!.path),
                     height: 200,
                     fit: BoxFit.cover,
                   ),
-                )
+                ),
               ],
             ),
         ],

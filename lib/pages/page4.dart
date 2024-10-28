@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 
 class Page4 extends StatefulWidget {
-  Page4();
+  const Page4({super.key});
 
   @override
   _Page4State createState() => _Page4State();
@@ -14,7 +14,7 @@ class _Page4State extends State<Page4> {
     Size size = MediaQuery.of(context).size;
     return Scaffold(
       appBar: AppBar(
-        title: Text("VajirabenjatasPark"),
+        title: const Text("VajirabenjatasPark"),
         backgroundColor: Colors.blue,
       ),
       body: Column(
@@ -43,7 +43,7 @@ class _Page4State extends State<Page4> {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Container(
+                    SizedBox(
                       width: size.width / 2,
                       child: const Text(
                         "สวนรถไฟ",
