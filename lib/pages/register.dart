@@ -12,51 +12,57 @@ class Register extends StatefulWidget {
 
 class _RegisterState extends State<Register> {
   final _formKey = GlobalKey<FormState>();
-  String username = '';
   String email = '';
+  String first_name = '';
+  String last_name = '';
   String password = '';
+  String password2 = '';
 
- Future<void> register() async {
-  if (!_formKey.currentState!.validate()) {
-    return;
-  }
-  _formKey.currentState!.save();
+  Future<void> register() async {
+    if (!_formKey.currentState!.validate()) {
+      return;
+    }
+    _formKey.currentState!.save();
 
-  final url = Uri.parse('http://10.101.237.143:8000/users/register/'); // ใช้ 10.0.2.2 สำหรับ emulator
-  
-  try {
-    final response = await http.post(
-      url,
-      headers: {'Content-Type': 'application/json'},
-      body: json.encode({
-        'username': username,
-        'email': email,
-        'password': password,
-      }),
-    );
+    final url = Uri.parse(
+        'http://10.101.237.3:8000/users/register/'); // ใช้ 10.0.2.2 สำหรับ emulator
 
-    if (response.statusCode == 201) {
-      // ถ้าลงทะเบียนสำเร็จ นำทางไปหน้า LoginPage
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Registration successful')),
+    try {
+      final response = await http.post(
+        url,
+        headers: {'Content-Type': 'application/json'},
+        body: json.encode({
+          'email': email,
+          'first_name': first_name,
+          'last_name' : last_name,
+          'password': password,
+          'password2': password2,
+        }),
       );
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (BuildContext context) => const LoginPage()),
-      );
-    } else {
-      // แสดง error message ถ้ามีปัญหา
-      final data = json.decode(response.body);
+
+      if (response.statusCode == 201) {
+        // ถ้าลงทะเบียนสำเร็จ นำทางไปหน้า LoginPage
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Registration successful')),
+        );
+        Navigator.of(context).pushReplacement(
+          MaterialPageRoute(
+              builder: (BuildContext context) => const LoginPage()),
+        );
+      } else {
+        // แสดง error message ถ้ามีปัญหา
+        final data = json.decode(response.body);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: ${data.toString()}')),
+        );
+      }
+    } catch (error) {
+      // จัดการ error กรณีการเชื่อมต่อไม่สำเร็จ
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Error: ${data.toString()}')),
+        SnackBar(content: Text('Failed to register: $error')),
       );
     }
-  } catch (error) {
-    // จัดการ error กรณีการเชื่อมต่อไม่สำเร็จ
-    ScaffoldMessenger.of(context).showSnackBar(
-      SnackBar(content: Text('Failed to register: $error')),
-    );
   }
-}
 
   @override
   Widget build(BuildContext context) {
@@ -83,7 +89,8 @@ class _RegisterState extends State<Register> {
                   icon: const Icon(Icons.arrow_back),
                   onPressed: () {
                     Navigator.of(context).pushReplacement(
-                      MaterialPageRoute(builder: (BuildContext context) => const LoginPage()),
+                      MaterialPageRoute(
+                          builder: (BuildContext context) => const LoginPage()),
                     );
                   },
                 ),
@@ -116,7 +123,9 @@ class _RegisterState extends State<Register> {
                         border: OutlineInputBorder(),
                       ),
                       validator: (value) {
-                        if (value == null || value.isEmpty || !value.contains('@')) {
+                        if (value == null ||
+                            value.isEmpty ||
+                            !value.contains('@')) {
                           return 'Please enter a valid email';
                         }
                         return null;
@@ -129,7 +138,7 @@ class _RegisterState extends State<Register> {
                     TextFormField(
                       keyboardType: TextInputType.text,
                       decoration: const InputDecoration(
-                        labelText: "Username",
+                        labelText: "Firstname",
                         prefixIcon: Icon(Icons.person),
                         border: OutlineInputBorder(),
                       ),
@@ -140,7 +149,25 @@ class _RegisterState extends State<Register> {
                         return null;
                       },
                       onSaved: (value) {
-                        username = value!;
+                        first_name = value!;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: "lastname",
+                        prefixIcon: Icon(Icons.person),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Please enter a lastname';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        last_name = value!;
                       },
                     ),
                     const SizedBox(height: 20),
@@ -160,6 +187,25 @@ class _RegisterState extends State<Register> {
                       },
                       onSaved: (value) {
                         password = value!;
+                      },
+                    ),
+                    const SizedBox(height: 20),
+                    TextFormField(
+                      obscureText: true,
+                      keyboardType: TextInputType.text,
+                      decoration: const InputDecoration(
+                        labelText: "Password2",
+                        prefixIcon: Icon(Icons.lock),
+                        border: OutlineInputBorder(),
+                      ),
+                      validator: (value) {
+                        if (value == null || value.length < 6) {
+                          return 'Password must be at least 6 characters';
+                        }
+                        return null;
+                      },
+                      onSaved: (value) {
+                        password2 = value!;
                       },
                     ),
                     const SizedBox(height: 20),
@@ -192,7 +238,8 @@ class _RegisterState extends State<Register> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const LoginPage()),
+                              MaterialPageRoute(
+                                  builder: (context) => const LoginPage()),
                             );
                           },
                           child: const Text("Login"),

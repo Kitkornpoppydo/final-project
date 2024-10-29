@@ -1,6 +1,7 @@
+import 'dart:convert'; // Add this if you are fetching data from an API
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http; // Add this for HTTP requests
 import 'package:testflutter/components/infobird.dart';
-import 'package:testflutter/modelbird/modelbird1.dart';
 import 'package:testflutter/pages/page1.dart';
 import 'package:testflutter/pages/page2.dart';
 import 'package:testflutter/pages/page3.dart';
@@ -16,17 +17,28 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage>
     with SingleTickerProviderStateMixin {
   late TabController _tabController;
+  late Future<List<BirdModel>> bird; // Define the Future variable
 
   @override
   void initState() {
     super.initState();
-    // Initialize the TabController with 2 tabs
     _tabController = TabController(length: 2, vsync: this);
+    bird = getBird(); // Initialize the Future variable
+  }
+
+  Future<List<BirdModel>> getBird() async {
+    final response = await http.get(Uri.parse('http://10.101.237.3:8000/birds/')); // Update with your API URL
+    if (response.statusCode == 200) {
+      List<dynamic> apidata = jsonDecode(response.body);
+      return apidata.map((json) => BirdModel.fromJson(json)).toList();
+    } else {
+      throw Exception("Failed to load birds");
+    }
   }
 
   @override
   void dispose() {
-    _tabController.dispose(); // Dispose the controller when no longer needed
+    _tabController.dispose();
     super.dispose();
   }
 
@@ -60,17 +72,15 @@ class _HomePageState extends State<HomePage>
         children: [
           Stack(
             children: [
-              // Background with overlay color
               Container(
                 height: 270,
                 decoration: BoxDecoration(
                   color: const Color(0xFF3b5999).withOpacity(.85),
                 ),
               ),
-              // Positioned IconButton inside a Container
               Positioned(
-                top: 40, // Adjust as needed
-                left: 10, // Adjust as needed
+                top: 40,
+                left: 10,
                 child: Container(
                   decoration: const BoxDecoration(
                     shape: BoxShape.circle,
@@ -97,7 +107,6 @@ class _HomePageState extends State<HomePage>
               ),
             ],
           ),
-          // Tab Bar
           TabBar(
             controller: _tabController,
             labelColor: Colors.black,
@@ -108,11 +117,10 @@ class _HomePageState extends State<HomePage>
               fontWeight: FontWeight.bold,
             ),
             tabs: const [
-              Tab(text: 'park'),
-              Tab(text: 'bird'),
+              Tab(text: 'Park'),
+              Tab(text: 'Bird'),
             ],
           ),
-          // Expanded section for park
           Expanded(
             child: TabBarView(
               controller: _tabController,
@@ -187,36 +195,45 @@ class _HomePageState extends State<HomePage>
                     },
                   ),
                 ),
-                // Expanded section for bird
-                ListView.builder(
-                  itemCount: birdList.length,
-                  itemBuilder: (context, index) {
-                    Modelbird1 bird1 = birdList[index];
-                    return Card(
-                      child: ListTile(
-                        title: Text(
-                          bird1.title,
-                          style: const TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
-                          ),
-                        ),
-                        subtitle: Text(bird1.nameeng),
-                        leading: Image.asset(bird1.image,width: 80,),
-                        trailing: const Icon(Icons.arrow_forward_rounded),
-                        // เชื่อมหน้า infobird
-                        onTap: () {
-                          Navigator.of(context).push(
-                            MaterialPageRoute(
-                              builder: (BuildContext context) =>
-                                  Infobird(bird1), 
+                // Bird section using FutureBuilder
+                FutureBuilder<List<BirdModel>>(
+                  future: bird,
+                  builder: (context, snapshot) {
+                    if (snapshot.connectionState == ConnectionState.waiting) {
+                      return const CircularProgressIndicator();
+                    } else if (snapshot.hasData) {
+                      return ListView.builder(
+                        itemCount: snapshot.data!.length,
+                        itemBuilder: (context, index) {
+                          BirdModel birdModel = snapshot.data![index];
+                          return Card(
+                            child: ListTile(
+                              title: Text(
+                                birdModel.bird_common_name,
+                                style: const TextStyle(
+                                  fontSize: 20,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              subtitle: Text(birdModel.bird_th_name),
+                              //leading: Image.network(birdModel.bird_image, width: 80),
+                              trailing: const Icon(Icons.arrow_forward_rounded),
+                              onTap: () {
+                                Navigator.of(context).push(
+                                  MaterialPageRoute(
+                                    builder: (BuildContext context) => Infobird(birdModel),
+                                  ),
+                                );
+                              },
                             ),
                           );
                         },
-                      ),
-                    );
+                      );
+                    } else {
+                      return const Center(child: Text("Could not fetch data"));
+                    }
                   },
-                )
+                ),
               ],
             ),
           ),
@@ -225,7 +242,3 @@ class _HomePageState extends State<HomePage>
     );
   }
 }
-
-
-
-

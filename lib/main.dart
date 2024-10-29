@@ -1,6 +1,7 @@
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'pages/login.dart';
+import 'package:firebase_core/firebase_core.dart';
 
 List<CameraDescription> cameras = [];
 
@@ -19,7 +20,7 @@ class MyApp extends StatelessWidget {
   Widget build(BuildContext context) {
     return const MaterialApp(
       debugShowCheckedModeBanner: false,
-      home:LoginPage(),
+      home: LoginPage(),
     );
   }
 }

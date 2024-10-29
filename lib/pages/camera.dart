@@ -23,33 +23,41 @@ class _CameraPageState extends State<CameraPage> {
   }
 
   Future<void> _initCamera() async {
-    // ดึงรายการกล้องที่มีอยู่
-    _cameras = await availableCameras();
+    try {
+      // Get available cameras
+      _cameras = await availableCameras();
 
-    // ค้นหากล้องหลัง
-    final backCamera = _cameras!.firstWhere(
-      (camera) => camera.lensDirection == CameraLensDirection.back,
-      orElse: () => _cameras![0], // หากไม่พบกล้องหลังให้ใช้กล้องแรก
-    );
+      // Find the back camera
+      final backCamera = _cameras!.firstWhere(
+        (camera) => camera.lensDirection == CameraLensDirection.back,
+        orElse: () => _cameras![0], // Fallback to the first camera
+      );
 
-    // สร้าง CameraController ด้วยกล้องหลัง
-    _cameraController = CameraController(
-      backCamera,
-      ResolutionPreset.high,
-    );
+      // Create the camera controller
+      _cameraController = CameraController(
+        backCamera,
+        ResolutionPreset.high,
+      );
 
-    // เริ่มต้นกล้อง
-    await _cameraController!.initialize();
+      // Initialize the camera
+      await _cameraController!.initialize();
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    setState(() {});
+      setState(() {});
+    } catch (e) {
+      print("Error initializing camera: $e");
+    }
   }
 
   Future<void> _takePicture() async {
     if (_cameraController!.value.isInitialized) {
-      _imageFile = await _cameraController!.takePicture();
-      setState(() {});
+      try {
+        _imageFile = await _cameraController!.takePicture();
+        setState(() {});
+      } catch (e) {
+        print("Error taking picture: $e");
+      }
     }
   }
 
@@ -65,6 +73,7 @@ class _CameraPageState extends State<CameraPage> {
       print("Error picking image from gallery: $e");
     }
   }
+  
 
   @override
   void dispose() {
@@ -86,16 +95,16 @@ class _CameraPageState extends State<CameraPage> {
       ),
       body: Column(
         children: [
-          // แสดงภาพตัวอย่างจากกล้อง
+          // Show the camera preview
           SizedBox(
-            height: 350,
+            height: 250,
             child: AspectRatio(
               aspectRatio: _cameraController!.value.aspectRatio,
               child: CameraPreview(_cameraController!),
             ),
           ),
           const SizedBox(height: 20),
-          // ปุ่มถ่ายภาพ
+          // Capture and gallery buttons
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceEvenly,
             children: [
@@ -109,21 +118,20 @@ class _CameraPageState extends State<CameraPage> {
               ),
             ],
           ),
-          if (_imageFile != null)
-            Column(
-              children: [
-                const SizedBox(height: 30),
-                // แสดงภาพที่ถ่ายได้
-                SizedBox(
-                  width: 400,
-                  child: Image.file(
-                    File(_imageFile!.path),
-                    height: 200,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ],
+          if (_imageFile != null) ...[
+            const SizedBox(height: 30),
+            // Show the captured image
+            SizedBox(
+              width: 400,
+              child: Image.file(
+                File(_imageFile!.path),
+                height: 250,
+                fit: BoxFit.cover,
+              ),
             ),
+            const SizedBox(height: 10),
+            const Text("test"), // Display some text below the image
+          ],
         ],
       ),
     );

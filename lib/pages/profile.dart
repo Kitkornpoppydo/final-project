@@ -2,7 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:testflutter/pages/login.dart';
 
 class Profile extends StatefulWidget {
-  const Profile({super.key});
+  final String email;
+  const Profile({super.key, required this.email});
 
   @override
   _ProfileState createState() => _ProfileState();
@@ -10,7 +11,6 @@ class Profile extends StatefulWidget {
 
 class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
   late TabController _tabController;
-  
 
   @override
   void initState() {
@@ -59,7 +59,7 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                   padding: const EdgeInsets.all(20.0),
                   child: Center(
                     child: Text(
-                      "kiitikorn phasamniang",
+                      widget.email,
                       style: Theme.of(context).textTheme.headlineSmall,
                     ),
                   ),
@@ -83,15 +83,12 @@ class _ProfileState extends State<Profile> with SingleTickerProviderStateMixin {
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                     children: const [
+                    children: const [
                       // Edit Profile Tab
                       Center(child: Text('Edit Profile Content')),
 
-
-
-
                       // History Tab
-                       Center(child: Text('Edit Profile Content')),
+                      Center(child: Text('Edit Profile Content')),
                     ],
                   ),
                 ),

@@ -15,44 +15,60 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  String username = '';
+  String email = '';
   String password = '';
   final storage = const FlutterSecureStorage();
 
   Future<void> login() async {
     if (_formKey.currentState!.validate()) {
       _formKey.currentState!.save();
-      final url = Uri.parse('http://10.101.237.143:8000/users/login/');
-      final response = await http.post(url,
+      final url = Uri.parse('http://10.101.237.3:8000/users/login/');
+      try {
+        final response = await http.post(
+          url,
           headers: {'Content-Type': 'application/json'},
-          body: json.encode({
-            'username': username,
-            'password': password,
-          }));
-
-      if (response.statusCode == 200) {
-        final data = json.decode(response.body);
-        String access = data['access'];
-        String refresh = data['refresh'];
-
-        // บันทึกโทเค็นอย่างปลอดภัย
-        await storage.write(key: 'access', value: access);
-        await storage.write(key: 'refresh', value: refresh);
-
-        // นำทางไปยังหน้าหลักของแอป
-        ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Login successful')),
+          body: json.encode({'email': email, 'password': password}),
         );
-        Navigator.of(context).pushReplacement(
-          MaterialPageRoute(builder: (context) => const MainScreen()),
-        );
-      } else {
+
+        // ตรวจสอบสถานะการตอบกลับ
+        if (response.statusCode == 200) {
+          final data = json.decode(response.body);
+          String? access = data['access_token'];
+          String? refresh = data['refresh_token'];
+
+          if (access != null && refresh != null) {
+            // บันทึกโทเค็นอย่างปลอดภัย
+            await storage.write(key: 'access', value: access);
+            await storage.write(key: 'refresh', value: refresh);
+
+            // นำทางไปยังหน้าหลักของแอป โดยส่งค่า email
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Login successful')),
+            );
+            Navigator.of(context).pushReplacement(
+              MaterialPageRoute(builder: (context) => MainScreen(email: email)),
+            );
+          } else {
+            // ถ้าไม่มี access หรือ refresh ในการตอบกลับ
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(content: Text('Token not found in response')),
+            );
+          }
+        } else {
+          // ตรวจสอบข้อความแสดงข้อผิดพลาดจากเซิร์ฟเวอร์
+          final errorData = json.decode(response.body);
+          String errorMessage = errorData['message'] ?? 'Invalid credentials';
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text(errorMessage)),
+          );
+        }
+      } catch (e) {
+        print('Error: $e'); // เพิ่มการพิมพ์ข้อผิดพลาด
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Invalid credentials')),
+          const SnackBar(content: Text('An error occurred, please try again.')),
         );
       }
     }
-   
   }
 
   @override
@@ -77,15 +93,15 @@ class _LoginPageState extends State<LoginPage> {
                 TextFormField(
                   keyboardType: TextInputType.emailAddress,
                   decoration: const InputDecoration(
-                    labelText: "Username",
+                    labelText: "Email",
                     prefixIcon: Icon(Icons.person),
                     border: OutlineInputBorder(),
                   ),
                   onSaved: (value) {
-                    username = value!;
+                    email = value ?? ''; // ใช้ค่าเริ่มต้นถ้า value เป็น null
                   },
                   validator: (value) {
-                    return value!.isEmpty ? 'Please enter your username' : null;
+                    return value!.isEmpty ? 'Please enter your email' : null;
                   },
                 ),
                 const SizedBox(height: 20),
@@ -98,7 +114,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   obscureText: true,
                   onSaved: (value) {
-                    password = value!;
+                    password = value ?? ''; // ใช้ค่าเริ่มต้นถ้า value เป็น null
                   },
                   validator: (value) {
                     return value!.isEmpty ? 'Please enter your password' : null;
@@ -114,8 +130,7 @@ class _LoginPageState extends State<LoginPage> {
                         onPressed: () {
                           Navigator.push(
                             context,
-                            MaterialPageRoute(
-                                builder: (context) => const Forgotpass()),
+                            MaterialPageRoute(builder: (context) => const Forgotpass()),
                           );
                         },
                         child: Text(
@@ -164,16 +179,8 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ],
                 ),
-                // login with gmail
                 const SizedBox(height: 20),
                 InkWell(
-                  onTap:(){
-                    Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => const MainScreen()),
-                          );
-                  } ,
                   child: Container(
                     height: 50,
                     decoration: BoxDecoration(
@@ -191,7 +198,7 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                     ),
                   ),
-                )
+                ),
               ],
             ),
           ),
